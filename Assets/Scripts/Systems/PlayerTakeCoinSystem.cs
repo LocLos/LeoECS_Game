@@ -25,9 +25,7 @@ public class PlayerTakeCoinSystem : IEcsInitSystem, IEcsRunSystem
                 _gameData.AddCoin();
                 GameObject.Destroy(hitComponent.Other.gameObject);
                 systems.GetWorld().DelEntity(hitEntity);
-
             }
-
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using TMPro;
-
 public class GameData
 {
     public ConfigurationSO Configuration { get; private set; }
@@ -11,6 +10,7 @@ public class GameData
     {
         Configuration = configuration;
         _coinCounter = coinCounter;
+        _coins = Configuration.PlayerMoney;
     }
 
     public void AddCoin()

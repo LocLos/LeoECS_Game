@@ -5,62 +5,55 @@ using UnityEngine;
 
 public class Startup : MonoBehaviour
 {
+    private EcsWorld _ecsWorld;
+    private IEcsSystems _initSystems;
+    private IEcsSystems _updateSystems;
+    [SerializeField] private ConfigurationSO _configuration;
+    [SerializeField] private TMP_Text _coinCounter;
 
-    private EcsWorld ecsWorld;
-    private IEcsSystems initSystems;
-    private IEcsSystems updateSystems;
-    // private IEcsSystems fixedUpdateSystems;
-    [SerializeField] private ConfigurationSO configuration;
-    [SerializeField] private TMP_Text coinCounter;
-    [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private GameObject playerWonPanel;
+    private Factory _factory;
+    private GameData _gameData;
 
     private void Start()
     {
-        ecsWorld = new EcsWorld();
-        var gameData = new GameData(configuration, coinCounter);
+        CreateInfrastructer();
 
-       /* PlayerInputSystem playerInputSystem = new PlayerInputSystem();
-        PlayerTakeCoinSystem playerTakeCoinSystem = new PlayerTakeCoinSystem();
-        PlayerMovingSystem playerMovingSystem = new PlayerMovingSystem();*/
-        /* gameData.gameOverPanel = gameOverPanel;
-         gameData.playerWonPanel = playerWonPanel;
-         gameData.sceneService = Service<SceneService>.Get(true);*/
+        AddInitSystem();
+        AddUpdateSystem();
 
-        initSystems = new EcsSystems(ecsWorld, gameData)
-           /*  .Add(playerInputSystem)
-             .Add(playerTakeCoinSystem)
-             .Add(playerMovingSystem)*/
+        _initSystems.Init();
+        _updateSystems.Init();
+    }
+
+    private void CreateInfrastructer()
+    {
+        _ecsWorld = new EcsWorld();
+        _factory = new Factory(_ecsWorld);
+        _gameData = new GameData(_configuration, _coinCounter);
+    }
+
+    private void AddInitSystem()
+    {
+        _initSystems = new EcsSystems(_ecsWorld, _gameData)
              .Add(new PlayerInitSystem());
-        // .Add(new DangerousInitSystem());
+    }
 
-
-        updateSystems = new EcsSystems(ecsWorld, gameData)
+    private void AddUpdateSystem()
+    {
+        _updateSystems = new EcsSystems(_ecsWorld, _gameData)
             .Add(new PlayerInputSystem())
             .Add(new PlayerTakeCoinSystem())
+            .Add(new EnemyMovingSystem())
             .Add(new PlayerMovingSystem());
-        /* .Add(new DangerousRunSystem())
-         .Add(new BuffHitSystem())
-         .Add(new DangerousHitSystem())
-         .Add(new WinHitSystem())
-     .Add(new SpeedBuffSystem())
-         .Add(new JumpBuffSystem())
-         .DelHere<HitComponent>();*/
-        initSystems.Init();
-        updateSystems.Init();
-
     }
 
-    private void Update()
-    {
-        updateSystems.Run();
-    }
+    private void Update() => 
+        _updateSystems.Run();
 
     private void OnDestroy()
     {
-        initSystems.Destroy();
-        updateSystems.Destroy();
-        //  fixedUpdateSystems.Destroy();
-        ecsWorld.Destroy();
+        _initSystems.Destroy();
+        _updateSystems.Destroy();
+        _ecsWorld.Destroy();
     }
 }

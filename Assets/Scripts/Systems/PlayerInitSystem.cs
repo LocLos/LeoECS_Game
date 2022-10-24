@@ -19,14 +19,9 @@ public class PlayerInitSystem : IEcsInitSystem
 
         var playerGO = GameObject.FindGameObjectWithTag("Player");// СОЗДАВАТЬ ЧЕРЕЗ ФАБРИКУ?
         playerGO.GetComponentInChildren<CollisionCheckerView>().ecsWorld = ecsWorld;
-      /*  
-       playerGO.GetComponentInChildren<GroundCheckerView>().groundedPool = systems.GetWorld().GetPool<GroundedComponent>();
-        playerGO.GetComponentInChildren<GroundCheckerView>().playerEntity = playerEntity;
-      */
-        playerComponent.PlayerSpeed = gameData.Configuration.PlayerSpeed;
-        playerComponent.PlayerTransform = playerGO.transform;
-      //  playerComponent.playerJumpForce = gameData.configuration.playerJumpForce;
-        playerComponent.PlayerCollider = playerGO.GetComponent<CapsuleCollider>();
-       // playerComponent.playerRB = playerGO.GetComponent<Rigidbody>();
+      
+        playerComponent.Speed = gameData.Configuration.PlayerSpeed;
+        playerComponent.Transform = playerGO.transform;
+        playerComponent.Collider = playerGO.GetComponent<CapsuleCollider>();
     }
 }
